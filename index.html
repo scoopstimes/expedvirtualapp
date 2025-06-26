@@ -285,11 +285,9 @@
   });
 
   function loginWithGoogle() {
-    const provider = new firebase.auth.GoogleAuthProvider();
-    auth.signInWithPopup(provider).catch(error => {
-      console.error("Login gagal:", error.message);
-    });
-  }
+  const provider = new firebase.auth.GoogleAuthProvider();
+  firebase.auth().signInWithRedirect(provider);
+}
 
   async function loadMaps() {
     const snapshot = await db.collection("maps").orderBy("createdAt", "desc").get();
