@@ -286,7 +286,7 @@
 
   function loginWithGoogle() {
   const provider = new firebase.auth.GoogleAuthProvider();
-  firebase.auth().signInWithRedirect(provider);
+  firebase.auth().signInWithPopUp(provider);
 }
 
   async function loadMaps() {
