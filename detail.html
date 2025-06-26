@@ -174,7 +174,25 @@
 .comment-panel.visible {
   transform: translateY(0);
 }
+button:focus {
+  outline: none !important;
+  box-shadow: none !important;
+}
 
+button:active {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+button {
+  -webkit-tap-highlight-color: transparent; /* Menghilangkan efek highlight pada perangkat mobile */
+}a:active {
+  outline: none !important;
+  box-shadow: none !important;
+}a:focus {
+  outline: none !important;
+  box-shadow: none !important;
+}
 /* Header Komentar */
 .comment-header {
   padding: 12px 20px;
