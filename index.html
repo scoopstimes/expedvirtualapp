@@ -231,7 +231,7 @@
     </header>
 
     <!-- Banner -->
-    <img src="banner.jpg" class="banner" alt="Banner"/>
+    <img src="https://example.com/your-banner.jpg" class="banner" alt="Banner"/>
 
     <!-- Categories -->
     <div class="category-container">
@@ -285,9 +285,11 @@
   });
 
   function loginWithGoogle() {
-  const provider = new firebase.auth.GoogleAuthProvider();
-  firebase.auth().signInWithPopUp(provider);
-}
+    const provider = new firebase.auth.GoogleAuthProvider();
+    auth.signInWithPopup(provider).catch(error => {
+      console.error("Login gagal:", error.message);
+    });
+  }
 
   async function loadMaps() {
     const snapshot = await db.collection("maps").orderBy("createdAt", "desc").get();
