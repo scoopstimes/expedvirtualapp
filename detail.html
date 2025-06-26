@@ -324,7 +324,7 @@
           <div class="stat-item"><i class="mdi mdi-account-multiple"></i> ${mapData.active || 0} aktif</div>
           <div class="stat-item"><i class="mdi mdi-eye"></i> ${mapData.visits || 0} kunjungan</div>
         </div>
-        <div class="description">${mapData.description}</div>
+<div class="description">${mapData.description.replace(/\n/g, "<br>")}</div>
         <div class="screenshot-scroll">${mapData.screenshotURLs.map(u => `<img src="${u}">`).join("")}</div>
         <div class="buttons">
           <a class="btn btn-comment" onclick="toggleComments()">
