@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Detail Map - ExpedMap</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://cdn.materialdesignicons.com/6.9.96/css/materialdesignicons.min.css" rel="stylesheet">
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <style>
+    body {
+  margin: 0;
+  background: #0e0f12;
+  font-family: 'Montserrat', sans-serif;
+  color: #ffffff;
+}
+
+/* Header */
+.header {
+  display: flex;
+  align-items: center;
+  padding: 14px 20px;
+  background: #18191c;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  border-bottom: 1px solid #2a2b2e;
+}
+.back-btn, .notif-btn, .login-btn {
+  font-size: 20px;
+  color: #fff;
+  margin-right: 14px;
+  cursor: pointer;
+}
+.title-header {
+  flex: 1;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+/* Container utama */
+.container {
+  padding: 20px;
+  padding-bottom: 120px;
+}
+
+/* Map Info */
+.map-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 16px;
+}
+.map-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 12px;
+  object-fit: cover;
+}
+.map-title-group {
+  display: flex;
+  flex-direction: column;
+}
+.map-title {
+  font-size: 18px;
+  font-weight: 600;
+}
+.map-developer {
+  font-size: 13px;
+  color: #aaa;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Gambar utama */
+.main-image {
+  width: 100%;
+  max-height: 200px;
+  object-fit: cover;
+  border-radius: 10px;
+  margin: 16px 0;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+
+/* Statistik */
+.stats {
+  display: flex;
+  gap: 16px;
+  font-size: 13px;
+  color: #bbb;
+  margin-bottom: 16px;
+}
+.stat-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Deskripsi */
+.description {
+  font-size: 14px;
+  color: #ccc;
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+
+/* Screenshot Scroll */
+.screenshot-scroll {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  margin-bottom: 24px;
+  scroll-snap-type: x mandatory;
+  padding-bottom: 6px;
+}
+.screenshot-scroll img {
+  scroll-snap-align: start;
+  width: 140px;
+  height: 90px;
+  border-radius: 10px;
+  object-fit: cover;
+}
+
+/* Tombol-tombol utama */
+.buttons {
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+  margin-top: 24px;
+}
+.btn-play,
+.btn-comment {
+  padding: 10px 18px;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  border: none;
+  transition: background 0.2s;
+}
+.btn-play {
+  background: #2979ff;
+  color: #fff;
+}
+.btn-play:hover {
+  background: #1c5ed9;
+}
+.btn-comment {
+  background: #2c2d31;
+  color: #fff;
+}
+.btn-comment:hover {
+  background: #3a3b40;
+}
+
+/* Panel Komentar */
+.comment-panel {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #18191b;
+  border-top: 1px solid #2c2d31;
+  transform: translateY(100%);
+  transition: transform 0.3s ease;
+  max-height: 70%;
+  display: flex;
+  flex-direction: column;
+  z-index: 99;
+}
+.comment-panel.visible {
+  transform: translateY(0);
+}
+
+/* Header Komentar */
+.comment-header {
+  padding: 12px 20px;
+  border-bottom: 1px solid #2c2d31;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Scroll Komentar */
+.comment-scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px 20px;
+}
+
+/* Komentar */
+.comment-box {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+.comment-box img {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+}
+.comment-content {
+  background: #232427;
+  padding: 10px 14px;
+  border-radius: 10px;
+  flex: 1;
+}
+.comment-author {
+  font-size: 13px;
+  font-weight: 600;
+  color: #eee;
+}
+.comment-text {
+  font-size: 13px;
+  color: #ccc;
+  margin-top: 4px;
+}
+
+/* Input Komentar */
+.comment-fixed-form {
+  padding: 12px 20px;
+  background: #18191b;
+  border-top: 1px solid #2c2d31;
+}
+.comment-input {
+  display: flex;
+  gap: 8px;
+}
+.comment-input input {
+  flex: 1;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid #333;
+  background: #121212;
+  color: #fff;
+}
+.comment-input button {
+  padding: 10px 16px;
+  border-radius: 10px;
+  background: #2979ff;
+  color: #fff;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+}
+.comment-input button:hover {
+  background: #1c5ed9;
+}
+
+/* Login Prompt */
+.login-prompt {
+  text-align: center;
+  margin-top: 20px;
+  color: #999;
+  font-size: 13px;
+}
+.login-prompt span {
+  color: #2979ff;
+  cursor: pointer;
+}
+.login-prompt span:hover {
+  text-decoration: underline;
+}
+  </style>
+</head>
+<body>
+  <div class="header">
+    <i class="mdi mdi-arrow-left back-btn" onclick="history.back()"></i>
+    <div class="title-header">Detail Map</div>
+    <i id="notifBtn" class="mdi mdi-bell-outline notif-btn"></i>
+    <button id="loginBtn" class="login-btn">Masuk</button>
+  </div>
+
+  <div class="container" id="detailContainer">Loading...</div>
+
+  <div id="commentPanel" class="comment-panel">
+    <div class="comment-header">
+      <h3 style="margin:0;">Komentar</h3>
+      <i class="mdi mdi-close" style="font-size:24px; cursor:pointer;" onclick="toggleComments()"></i>
+    </div>
+    <div class="comment-scroll" id="comments">Komentar sedang dimuat...</div>
+    <div class="comment-fixed-form" id="commentFormContainer"></div>
+  </div>
+
+  <script>
+    firebase.initializeApp({
+      apiKey: "AIzaSyAqeRya1bAWMIrO-N2frDheI5EFzNGCJss",
+      authDomain: "xtkj2database.firebaseapp.com",
+      projectId: "xtkj2database"
+    });
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    const params = new URLSearchParams(window.location.search);
+    const mapId = params.get("id");
+    let mapData, user;
+
+    async function incVisits() {
+      const ref = db.collection("maps").doc(mapId);
+      await ref.update({ visits: firebase.firestore.FieldValue.increment(1) });
+    }
+
+    async function loadDetail() {
+      const doc = await db.collection("maps").doc(mapId).get();
+      if (!doc.exists) return detailContainer.innerHTML = "Map tidak ditemukan.";
+      mapData = doc.data();
+
+      detailContainer.innerHTML = `
+        <div class="map-header">
+          <img src="${mapData.iconURL}" class="map-icon">
+          <div class="map-title-group">
+            <div class="map-title">${mapData.title}</div>
+            <div class="map-developer">
+              <i class="mdi mdi-account"></i> ${mapData.studioName}
+            </div>
+          </div>
+        </div>
+        <img src="${mapData.iconURL}" class="main-image">
+        <div class="stats">
+          <div class="stat-item"><i class="mdi mdi-star"></i> ${mapData.rating || 0}%</div>
+          <div class="stat-item"><i class="mdi mdi-account-multiple"></i> ${mapData.active || 0} aktif</div>
+          <div class="stat-item"><i class="mdi mdi-eye"></i> ${mapData.visits || 0} kunjungan</div>
+        </div>
+        <div class="description">${mapData.description}</div>
+        <div class="screenshot-scroll">${mapData.screenshotURLs.map(u => `<img src="${u}">`).join("")}</div>
+        <div class="buttons">
+          <a class="btn btn-comment" onclick="toggleComments()">
+            <i class="mdi mdi-comment-outline"></i> Komentar
+          </a>
+          <a class="btn btn-play" href="${mapData.robloxLink}" target="_blank">
+            <i class="mdi mdi-play-circle"></i> Mainkan
+          </a>
+        </div>
+      `;
+      loadComments();
+    }
+
+    async function loadComments() {
+      const comDiv = document.getElementById("comments");
+      const formContainer = document.getElementById("commentFormContainer");
+      const snapshot = await db.collection("maps").doc(mapId).collection("comments")
+        .orderBy("createdAt", "desc").get();
+
+      let html = "";
+      snapshot.forEach(doc => {
+        const c = doc.data();
+        html += `
+          <div class="comment-box">
+            <img src="${c.photoURL}" alt="User">
+            <div class="comment-content">
+              <div class="comment-author">${c.displayName}</div>
+              <div class="comment-text">${c.text}</div>
+            </div>
+          </div>`;
+      });
+
+      comDiv.innerHTML = html || "<p style='color:#888'>Belum ada komentar.</p>";
+
+      if (!user) {
+        formContainer.innerHTML = `<div class="login-prompt">Silahkan <span onclick="doLogin()" style="color:#2962ff;cursor:pointer">masuk</span> untuk berkomentar.</div>`;
+      } else {
+        formContainer.innerHTML = `
+          <div class="comment-input">
+            <input id="commentInput" placeholder="Tulis komentar..." />
+            <button onclick="postComment()">Kirim</button>
+          </div>`;
+      }
+    }
+
+    async function postComment() {
+      const txt = document.getElementById("commentInput").value.trim();
+      if (!txt) return;
+      await db.collection("maps").doc(mapId).collection("comments").add({
+        text: txt,
+        uid: user.uid,
+        displayName: user.displayName,
+        photoURL: user.photoURL,
+        createdAt: new Date()
+      });
+      document.getElementById("commentInput").value = "";
+      loadComments();
+    }
+
+    function toggleComments() {
+      document.getElementById("commentPanel").classList.toggle("visible");
+    }
+
+    async function doLogin() {
+      const p = new firebase.auth.GoogleAuthProvider();
+      await auth.signInWithPopup(p);
+    }
+
+    auth.onAuthStateChanged(u => {
+      user = u;
+      document.getElementById("loginBtn").style.display = u ? "none" : "block";
+      loadDetail();
+    });
+
+    window.addEventListener("load", async () => {
+      await incVisits();
+      loadDetail();
+    });
+  </script>
+</body>
+</html>

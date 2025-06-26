@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Exped App - Beranda</title>
+  
+  <!-- Firebase JS -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  
+  <!-- Material Design Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/@mdi/font/css/materialdesignicons.min.css" rel="stylesheet" />
+  
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter&display=swap" rel="stylesheet"/>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      background-color: #121212;
+      color: #fff;
+      overflow-x: hidden;
+    }
+
+    /* Header */
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background-color: #1f1f1f;
+      padding: 16px 20px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .logo {
+      font-size: 18px;
+      font-weight: bold;
+      color: #fff;
+    }
+
+    .profile-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      cursor: pointer;
+    }
+
+    /* Banner Image */
+    .banner {
+      width: 100%;
+      height: 250px;
+      object-fit: cover;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+    }
+
+    /* Map Grid */
+    .map-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 15px;
+      padding: 20px;
+    }
+
+    .map-card {
+      background-color: #1c1c1c;
+      border-radius: 12px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+
+    .map-card:hover {
+      transform: scale(1.03);
+    }
+
+    .map-card img {
+      width: 100%;
+      height: 100px;
+      object-fit: cover;
+    }
+
+    .map-card-content {
+      padding: 10px;
+    }
+
+    .map-title {
+      font-weight: bold;
+      font-size: 14px;
+      margin-bottom: 4px;
+    }
+
+    .map-rating {
+      font-size: 12px;
+      color: #aaa;
+    }
+
+    /* Categories */
+    .category-container {
+      display: flex;
+      gap: 15px;
+      margin: 20px 0;
+      overflow-x: auto;
+    }
+
+    .category {
+      background-color: #2c2c2c;
+      padding: 8px 14px;
+      border-radius: 20px;
+      color: #fff;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .category:hover {
+      background-color: #2979ff;
+    }
+
+    /* Bottom Navbar */
+    .bottom-navbar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: #1a1a1a;
+      border-top: 1px solid #2b2b2b;
+      display: flex;
+      justify-content: space-around;
+      padding: 10px 0;
+      z-index: 99;
+    }
+
+    .bottom-navbar button {
+      background: none;
+      border: none;
+      color: #ccc;
+      font-size: 13px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      cursor: pointer;
+    }
+
+    .bottom-navbar button:hover {
+      color: #fff;
+    }
+
+    /* Stylish Scroll Bar */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #2979ff;
+      border-radius: 10px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: #1c5ed9;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: #2c2c2c;
+      border-radius: 10px;
+    }
+
+    /* Login Screen */
+    .login-screen {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      height: 100vh;
+      background: #121212;
+      padding: 40px 20px;
+    }
+
+    .login-screen h1 {
+      margin-bottom: 10px;
+    }
+
+    .login-screen p {
+      color: #aaa;
+      margin-bottom: 20px;
+    }
+
+    .google-btn {
+      padding: 10px 20px;
+      background-color: #fff;
+      color: #000;
+      border-radius: 8px;
+      border: none;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    footer {
+      text-align: center;
+      padding: 20px;
+      font-size: 12px;
+      color: #888;
+    }
+  </style>
+</head>
+<body>
+
+<div id="app">
+  <!-- Login Screen -->
+  <div class="login-screen" id="loginScreen" style="display: none;">
+    <h1>Exped App</h1>
+    <p>Login untuk melanjutkan</p>
+    <button class="google-btn" onclick="loginWithGoogle()">Login dengan Google</button>
+  </div>
+
+  <!-- Main App -->
+  <div id="mainApp" style="display: none;">
+    <header>
+      <div class="logo">Exped App</div>
+      <img src="" id="profilePhoto" class="profile-icon" alt="Profile"/>
+    </header>
+
+    <!-- Banner -->
+    <img src="banner.jpg" class="banner" alt="Banner"/>
+
+    <!-- Categories -->
+    <div class="category-container">
+      <div class="category">Baru Diupload</div>
+      <div class="category">Populer</div>
+      <div class="category">Trending</div>
+    </div>
+
+    <!-- Map Grid -->
+    <div class="map-grid" id="mapGrid">
+      <!-- Cards di-generate via JS -->
+    </div>
+
+    <footer>© 2025 ExpedMap Developer Community</footer>
+
+    <!-- Bottom Navbar -->
+    <div class="bottom-navbar">
+      <button onclick="alert('Halaman Beranda')"><i class="mdi mdi-home"></i><span>Beranda</span></button>
+      <button onclick="alert('Fitur Berita belum tersedia')"><i class="mdi mdi-newspaper"></i><span>Berita</span></button>
+      <button onclick="alert('Menu Profil')"><i class="mdi mdi-account"></i><span>Profil</span></button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyAqeRya1bAWMIrO-N2frDheI5EFzNGCJss",
+    authDomain: "xtkj2database.firebaseapp.com",
+    projectId: "xtkj2database",
+  };
+
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+  const auth = firebase.auth();
+
+  const loginScreen = document.getElementById("loginScreen");
+  const mainApp = document.getElementById("mainApp");
+  const profilePhoto = document.getElementById("profilePhoto");
+  const mapGrid = document.getElementById("mapGrid");
+
+  auth.onAuthStateChanged(user => {
+    if (user) {
+      loginScreen.style.display = "none";
+      mainApp.style.display = "block";
+      profilePhoto.src = user.photoURL;
+      loadMaps();
+    } else {
+      loginScreen.style.display = "flex";
+      mainApp.style.display = "none";
+    }
+  });
+
+  function loginWithGoogle() {
+    const provider = new firebase.auth.GoogleAuthProvider();
+    auth.signInWithPopup(provider).catch(error => {
+      console.error("Login gagal:", error.message);
+    });
+  }
+
+  async function loadMaps() {
+    const snapshot = await db.collection("maps").orderBy("createdAt", "desc").get();
+    mapGrid.innerHTML = "";
+    snapshot.forEach(doc => {
+      const data = doc.data();
+      const card = document.createElement("div");
+      card.className = "map-card";
+      card.onclick = () => window.location.href = `detail.html?id=${doc.id}`;
+      card.innerHTML = `
+        <img src="${data.iconURL}" alt="Map Icon" />
+        <div class="map-card-content">
+          <div class="map-title">${data.title}</div>
+          <div class="map-rating">Rating: ${Math.floor(Math.random() * 16) + 85}%</div>
+        </div>
+      `;
+      mapGrid.appendChild(card);
+    });
+  }
+</script>
+
+</body>
+</html>
